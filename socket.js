@@ -2,8 +2,16 @@ var app = require('express')();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var players = {};
+var host = '';
 
 io.on('connection', function(socket){
+
+    // if no host is set -- first one is the host
+    if (host === '') {
+
+        // Set host
+        host = socket.id;
+    }
 
     // Send new player to other players
     socket.broadcast.emit('New player', socket.id)
@@ -17,6 +25,10 @@ io.on('connection', function(socket){
 
     socket.on('Input ball', function (data) {
 
+        if (data.player[0] === host) {
+            ball = data.ball;
+        }
+
         if (players.hasOwnProperty(data.player[0])) {
 
             players[data.player[0]].x = data.player[1];
@@ -27,8 +39,9 @@ io.on('connection', function(socket){
         }
 
         socket.broadcast.emit('Output ball', {
-            ball: data.ball,
-            players: players
+            ball: ball,
+            players: players,
+            host: host
         });
 
     });

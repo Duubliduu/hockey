@@ -9,9 +9,10 @@
         this.ball = null;
         this.controls = {};
         this.id = '';
+        this.host = '';
 
         // Connectiong to server
-        this.socket = io.connect('http://localhost:3000');
+        this.socket = io.connect('http://lakka.kapsi.fi:62130');
     }
 
     Game.prototype = {
@@ -79,6 +80,9 @@
             });
 
             this.socket.on('Output ball', function (data) {
+
+                self.host = data.host;
+
                 self.ball.position.x = data.ball[0];
                 self.ball.position.y = data.ball[1];
                 self.ball.body.velocity.x = data.ball[2];
