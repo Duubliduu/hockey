@@ -26,6 +26,7 @@ io.on('connection', function(socket){
 
     socket.on('Input ball', function (data) {
 
+        // get host ball
         if (data.player[0] === host) {
             ball = data.ball;
         }
@@ -41,8 +42,7 @@ io.on('connection', function(socket){
 
         socket.broadcast.emit('Output ball', {
             ball: ball,
-            players: players,
-            host: host
+            players: players
         });
 
     });
@@ -50,6 +50,12 @@ io.on('connection', function(socket){
     socket.on('disconnect', function () {
         delete players[socket.id];
         socket.broadcast.emit('Player disconnected', socket.id);
+        if (socket.id === host) {
+            for (var i in players) {
+                host = i;
+                break;
+            }
+        }
     });
 
 });
